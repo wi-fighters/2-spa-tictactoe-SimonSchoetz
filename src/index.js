@@ -9,18 +9,24 @@ import './styles/index.css';
 // Components
 // ==========================
 class Square extends React.Component {
+  constructor(props) {
+    super(props)
+  }
   render() {
     return (
-      <button className="square">
+      <button name={this.props.index} className="square" >
         {/* TODO */}
       </button>
     );
   }
 }
-
 class Board extends React.Component {
+  // constructor(props) {
+  //   super(props)
+  // }
+
   renderSquare(i) {
-    return <Square />;
+    return <Square index={i} />;
   }
 
   render() {
@@ -30,15 +36,15 @@ class Board extends React.Component {
       <React.Fragment>
         <div className="status h2 text-center">{status}</div>
         <div className="board">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)}
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
         </div>
       </React.Fragment>
     );
