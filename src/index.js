@@ -11,26 +11,49 @@ import './styles/index.css';
 class Square extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      player: "X"
+    }
   }
   render() {
     return (
-      <button name={this.props.index} className="square" >
-        {/* TODO */}
-      </button>
+      <button name={this.props.index} className="square" onClick={() => { this.props.switchPlayer() }} >
+        {this.state.player}
+      </button >
     );
   }
 }
-class Board extends React.Component {
-  // constructor(props) {
-  //   super(props)
-  // }
 
-  renderSquare(i) {
-    return <Square index={i} />;
+///////////////////////////////////////////
+//              UPPER LEVEL              //
+///////////////////////////////////////////
+class Board extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      nextPlayer: "X"
+    }
   }
 
+
+
+  switchPlayer = () => {
+    if (this.state.nextPlayer === "X") {
+      this.setState({ nextPlayer: "0" })
+    } else {
+      this.setState({ nextPlayer: "X" })
+    }
+  }
+
+
+
+
+
+  renderSquare(i) {
+    return <Square index={i} switchPlayer={this.switchPlayer} />;
+  }
   render() {
-    const status = 'Next player: X';
+    const status = "Next player: " + this.state.nextPlayer;
 
     return (
       <React.Fragment>
