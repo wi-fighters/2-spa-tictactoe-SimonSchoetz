@@ -8,6 +8,10 @@ import './styles/index.css';
 // ==========================
 // Components
 // ==========================
+
+///////////////////////////////////////////
+//            Square Component           //
+///////////////////////////////////////////
 class Square extends React.Component {
   constructor(props) {
     super(props)
@@ -23,9 +27,28 @@ class Square extends React.Component {
     );
   }
 }
+///////////////////////////////////////////
+//          List Item Component          //
+///////////////////////////////////////////
+
+
+class GameList extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+  render() {
+    return (
+      <li><button>{this.props.game}</button></li>
+
+    )
+
+  }
+}
+
 
 ///////////////////////////////////////////
-//               MID LEVEL               //
+//         CHILD OF class GAME           //
 ///////////////////////////////////////////
 class Board extends React.Component {
   constructor(props) {
@@ -49,7 +72,6 @@ class Board extends React.Component {
 
   playerMove = i => {
     if (!this.props.gameWon) {
-      console.log(this.props)
       const squares = this.state.squares
       const newState = squares.map(el => {
         if (el.i === i && el.occupiedBy === "") {
@@ -138,21 +160,47 @@ class Game extends React.Component {
     super(props)
     this.state = {
       message: "Next player: X",
-      gameWon: false
+      gameWon: false,
+      winner: "",
+      games: []
     }
 
-  }
-  win = (winner) => {
-    this.setState({ message: winner + " won the game!" })
-    this.setState({ gameWon: true })
   }
 
   nextPlayer = (player) => {
     this.setState({ message: "Next player: " + player })
 
+  }
+
+  win = (winner) => {
+    this.setState({ winner: winner })
+    this.setState({ message: winner + " won the game!" })
+    this.setState({ gameWon: true })
+  }
+
+  newGame = () => {
+    if (this.state.winner === "") {
+      this.setState({ games: [...this.state.games, "Draw"] })
+    } else {
+      this.setState({ games: [...this.state.games, this.state.winner + " won"] })
+    }
+    this.setState({ winner: "" })
+    //store result into games
+    //somehow safe Board state
+    //call reset for Board state
+    //map games and return button
+    return (
+      <button>{}</button>
+    )
 
   }
+
+
   render() {
+    const gameList = this.state.games
+    const listItems = gameList.map(el => {
+      return (<GameList game={el} />)
+    })
     return (
       <article className="game container mt-5">
         <section className="row">
@@ -162,7 +210,12 @@ class Game extends React.Component {
           <div className="col-sm-4 game-info">
             <p className="h2">{this.state.message}</p>
             <ul className="nav nav-pills flex-column">
-              {/* TODO */}
+              <li>
+                <button onClick={() => { this.newGame() }}>
+                  New Game
+                </button>
+              </li>
+              {listItems}
             </ul>
           </div>
         </section>
