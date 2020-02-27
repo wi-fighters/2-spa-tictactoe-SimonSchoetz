@@ -12,13 +12,15 @@ class Square extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      player: "X"
+
     }
   }
   render() {
+    // console.log(this.props.occupied[this.props.index])
+    // const occupier = this.props.occupied[this.props.index]
     return (
-      <button name={this.props.index} className="square" onClick={() => { this.props.switchPlayer() }} >
-        {this.state.player}
+      <button className="square" onClick={() => { this.props.playerMove(this.props.index) }} >
+        {[...this.props.occupiedBy]}
       </button >
     );
   }
@@ -31,11 +33,33 @@ class Board extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      nextPlayer: "X"
+      nextPlayer: "X",
+      squares: [{ i: 0, occupiedBy: "" },
+      { i: 1, occupiedBy: "" },
+      { i: 2, occupiedBy: "" },
+      { i: 3, occupiedBy: "" },
+      { i: 4, occupiedBy: "" },
+      { i: 5, occupiedBy: "" },
+      { i: 6, occupiedBy: "" },
+      { i: 7, occupiedBy: "" },
+      { i: 8, occupiedBy: "" }]
     }
   }
 
+  //onclick (index)
+  //if occupiedBy = "" on index X  setState occupiedBy current player + then switch player
 
+  playerMove = i => {
+    const newState = this.state.squares.map(el => {
+      if (el.i === i && el.occupiedBy === "") {
+        el.occupiedBy = this.state.nextPlayer
+        this.switchPlayer()
+
+      }
+      return el
+    })
+    this.setState({ squares: newState })
+  }
 
   switchPlayer = () => {
     if (this.state.nextPlayer === "X") {
@@ -47,11 +71,19 @@ class Board extends React.Component {
 
 
 
-
-
   renderSquare(i) {
-    return <Square index={i} switchPlayer={this.switchPlayer} />;
+    // let square = ({ i: i, occupiedBy: "" })
+    // this.setState({
+    //   squares: [...this.state.squares, square]
+    // }
+    // )
+    return (
+      <Square index={i} playerMove={this.playerMove} occupiedBy={this.state.squares[i].occupiedBy} />
+
+    );
   }
+
+
   render() {
     const status = "Next player: " + this.state.nextPlayer;
 
@@ -73,7 +105,6 @@ class Board extends React.Component {
     );
   }
 }
-
 class Game extends React.Component {
   render() {
     return (
