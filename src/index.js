@@ -65,6 +65,7 @@ class Board extends React.Component {
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }],
     }
+
   }
 
   //onclick (index)
@@ -150,6 +151,21 @@ class Board extends React.Component {
       </React.Fragment>
     );
   }
+
+  reset() {
+    this.setState({
+      nextPlayer: "X",
+      squares: [{ i: 0, occupiedBy: "" },
+      { i: 1, occupiedBy: "" },
+      { i: 2, occupiedBy: "" },
+      { i: 3, occupiedBy: "" },
+      { i: 4, occupiedBy: "" },
+      { i: 5, occupiedBy: "" },
+      { i: 6, occupiedBy: "" },
+      { i: 7, occupiedBy: "" },
+      { i: 8, occupiedBy: "" }]
+    })
+  }
 }
 
 ///////////////////////////////////////////
@@ -164,6 +180,7 @@ class Game extends React.Component {
       winner: "",
       games: []
     }
+    this.resetGame = React.createRef()
 
   }
 
@@ -184,14 +201,14 @@ class Game extends React.Component {
     } else {
       this.setState({ games: [...this.state.games, this.state.winner + " won"] })
     }
-    this.setState({ winner: "" })
-    //store result into games
+    //reset in Game component
+    this.setState({ message: "Next player: X", winner: "" })
+    //reset in Board component
+    this.resetGame.current.reset()
+
     //somehow safe Board state
     //call reset for Board state
-    //map games and return button
-    return (
-      <button>{}</button>
-    )
+
 
   }
 
@@ -205,7 +222,7 @@ class Game extends React.Component {
       <article className="game container mt-5">
         <section className="row">
           <div className="col-sm-8 game-board">
-            <Board win={this.win} nextPlayer={this.nextPlayer} gameWon={this.state.gameWon} />
+            <Board ref={this.resetGame} win={this.win} nextPlayer={this.nextPlayer} gameWon={this.state.gameWon} />
           </div>
           <div className="col-sm-4 game-info">
             <p className="h2">{this.state.message}</p>
