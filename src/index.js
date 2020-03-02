@@ -71,6 +71,7 @@ class Board extends React.Component {
   }
 
   playerMove = i => {
+    console.log("Test")
     if (!this.props.gameWon) {
       const squares = this.state.squares
       //If square matches index is empty, write player name into occupiedBy and switch player
@@ -158,9 +159,9 @@ class Board extends React.Component {
   reset() {
 
     //safe current game state to oldGames first before resetting
-    // this.setState({
-    //   oldGames: [...this.state.oldGames, this.state.squares]
-    // })
+    this.setState({
+      oldGames: [...this.state.oldGames, this.state.squares]
+    })
     //reset Game template
     this.setState({
       nextPlayer: "X",
@@ -213,7 +214,7 @@ class Game extends React.Component {
       this.setState({ games: [...this.state.games, this.state.winner + " won"] })
     }
     //reset in Game component
-    this.setState({ message: "Starting player: X", winner: "" })
+    this.setState({ message: "Starting player: X", gameWon: false, winner: "" })
     //reset in Board component
     this.resetGame.current.reset()
 
