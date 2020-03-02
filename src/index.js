@@ -40,7 +40,7 @@ class GameList extends React.Component {
   //Shows button with status of the last game
   render() {
     return (
-      <li><button onClick={() => { this.props.loadGame(this.props.index) }}>{this.props.game}</button></li>
+      <li><button onClick={() => { this.props.loadOldGame(this.props.index) }}>{this.props.game}</button></li>
 
     )
   }
@@ -64,6 +64,8 @@ class Board extends React.Component {
       { i: 6, occupiedBy: "" },
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }],
+      currentGame: [],
+      oldGameLoaded: false,
       oldGames: []
     }
 
@@ -71,7 +73,7 @@ class Board extends React.Component {
   }
 
   playerMove = i => {
-    if (!this.props.gameWon) {
+    if (!this.props.gameWon && !this.state.oldGameLoaded) {
       const squares = this.state.squares
       //If square matches index is empty, write player name into occupiedBy and switch player
       // -> prevents actions by clicking on already occupied field
@@ -154,9 +156,16 @@ class Board extends React.Component {
       </React.Fragment>
     );
   }
+  //Load an old game and store current one
   loadOldGame = i => {
+    if (!this.state.oldGameLoaded) {
+      this.setState({ currentGame: [...this.state.squares], oldGameLoaded: true })
+    }
     this.setState({ squares: this.state.oldGames[i] })
-    // console.log(this.state.oldGames[i])
+  }
+  //Load the current game
+  loadCurrent = () => {
+    this.setState({ squares: [...this.state.currentGame], oldGameLoaded: false })
   }
 
   reset() {
@@ -189,6 +198,7 @@ class Game extends React.Component {
     super(props)
     this.state = {
       message: "Starting player: X",
+      newGame: "New Game",
       gameWon: false,
       winner: "",
       games: []
@@ -209,6 +219,12 @@ class Game extends React.Component {
   }
 
   newGame = () => {
+    //If an old game is loaded, become a continue button and not make a fresh game
+    if (this.gameBoard.current.state.oldGameLoaded) {
+      this.setState({ newGame: "New Game" })
+      this.gameBoard.current.loadCurrent()
+      return
+    }
     //Text on button
     if (this.state.winner === "") {
       this.setState({ games: [...this.state.games, "Draw"] })
@@ -220,21 +236,20 @@ class Game extends React.Component {
     //reset in Board component
     this.gameBoard.current.reset()
 
-    //TODO:
-    //somehow safe Board state
-    //call reset for Board state
 
 
   }
-  loadGame = (i) => {
+  //Call function in the Board component to load an old game
+  loadOldGame = i => {
     this.gameBoard.current.loadOldGame(i)
+    this.setState({ newGame: "Continue" })
   }
 
 
   render() {
     const gameList = this.state.games
     const listItems = gameList.map((el, i) => {
-      return (<GameList loadGame={this.loadGame} index={i} game={el} />)
+      return (<GameList loadOldGame={this.loadOldGame} index={i} game={el} />)
     })
     return (
       <article className="game container mt-5">
@@ -247,7 +262,7 @@ class Game extends React.Component {
             <ul className="nav nav-pills flex-column">
               <li>
                 <button onClick={() => { this.newGame() }}>
-                  New Game
+                  {this.state.newGame}
                 </button>
               </li>
               {listItems}
