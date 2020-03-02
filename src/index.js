@@ -37,12 +37,12 @@ class GameList extends React.Component {
     super(props)
     this.state = {}
   }
+  //Shows button with status of the last game
   render() {
     return (
       <li><button>{this.props.game}</button></li>
 
     )
-
   }
 }
 
@@ -64,16 +64,17 @@ class Board extends React.Component {
       { i: 6, occupiedBy: "" },
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }],
+      oldGames: []
     }
 
-  }
 
-  //onclick (index)
-  //if occupiedBy = "" on index X  setState occupiedBy current player + then switch player
+  }
 
   playerMove = i => {
     if (!this.props.gameWon) {
       const squares = this.state.squares
+      //If square matches index is empty, write player name into occupiedBy and switch player
+      // -> prevents actions by clicking on already occupied field
       const newState = squares.map(el => {
         if (el.i === i && el.occupiedBy === "") {
           el.occupiedBy = this.state.nextPlayer
@@ -81,7 +82,9 @@ class Board extends React.Component {
         }
         return el
       })
+      //update the squares array
       this.setState({ squares: newState })
+
       //Winning conditions horizontal
       const winner = this.state.nextPlayer
       if ((squares[0].occupiedBy === squares[1].occupiedBy) && (squares[0].occupiedBy === squares[2].occupiedBy) && (squares[0].occupiedBy !== "")) {
@@ -153,6 +156,12 @@ class Board extends React.Component {
   }
 
   reset() {
+
+    //safe current game state to oldGames first before resetting
+    // this.setState({
+    //   oldGames: [...this.state.oldGames, this.state.squares]
+    // })
+    //reset Game template
     this.setState({
       nextPlayer: "X",
       squares: [{ i: 0, occupiedBy: "" },
@@ -165,6 +174,7 @@ class Board extends React.Component {
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }]
     })
+    console.log(this.state.oldGames)
   }
 }
 
@@ -175,7 +185,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      message: "Next player: X",
+      message: "Starting player: X",
       gameWon: false,
       winner: "",
       games: []
@@ -196,16 +206,18 @@ class Game extends React.Component {
   }
 
   newGame = () => {
+    //Text on button
     if (this.state.winner === "") {
       this.setState({ games: [...this.state.games, "Draw"] })
     } else {
       this.setState({ games: [...this.state.games, this.state.winner + " won"] })
     }
     //reset in Game component
-    this.setState({ message: "Next player: X", winner: "" })
+    this.setState({ message: "Starting player: X", winner: "" })
     //reset in Board component
     this.resetGame.current.reset()
 
+    //TODO:
     //somehow safe Board state
     //call reset for Board state
 
@@ -215,8 +227,8 @@ class Game extends React.Component {
 
   render() {
     const gameList = this.state.games
-    const listItems = gameList.map(el => {
-      return (<GameList game={el} />)
+    const listItems = gameList.map((el, i) => {
+      return (<GameList index={i} game={el} />)
     })
     return (
       <article className="game container mt-5">
