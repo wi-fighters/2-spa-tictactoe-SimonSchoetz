@@ -64,6 +64,10 @@ class Board extends React.Component {
       { i: 6, occupiedBy: "" },
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }],
+      winConditions: [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], //horizontal
+        [0, 3, 6], [1, 4, 7], [3, 5, 8], //vertical
+        [0, 4, 8], [2, 4, 6]], //diagonal
       currentGame: [],
       oldGameLoaded: false,
       oldGames: []
@@ -87,34 +91,12 @@ class Board extends React.Component {
       //update the squares array
       this.setState({ squares: newState })
 
-      //Winning conditions horizontal
-      const winner = this.state.nextPlayer
-      if ((squares[0].occupiedBy === squares[1].occupiedBy) && (squares[0].occupiedBy === squares[2].occupiedBy) && (squares[0].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      if ((squares[3].occupiedBy === squares[4].occupiedBy) && (squares[3].occupiedBy === squares[5].occupiedBy) && (squares[3].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      if ((squares[6].occupiedBy === squares[7].occupiedBy) && (squares[6].occupiedBy === squares[8].occupiedBy) && (squares[6].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      //Winning conditions vertical
-      if ((squares[0].occupiedBy === squares[3].occupiedBy) && (squares[0].occupiedBy === squares[6].occupiedBy) && (squares[0].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      if ((squares[1].occupiedBy === squares[4].occupiedBy) && (squares[1].occupiedBy === squares[7].occupiedBy) && (squares[1].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      if ((squares[2].occupiedBy === squares[5].occupiedBy) && (squares[2].occupiedBy === squares[8].occupiedBy) && (squares[2].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      //Winning conditions diagonal
-      if ((squares[0].occupiedBy === squares[4].occupiedBy) && (squares[0].occupiedBy === squares[8].occupiedBy) && (squares[0].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
-      if ((squares[2].occupiedBy === squares[4].occupiedBy) && (squares[2].occupiedBy === squares[6].occupiedBy) && (squares[2].occupiedBy !== "")) {
-        this.props.win(winner)
-      }
+      this.state.winConditions.map(condition => {
+        const [a, b, c] = condition
+        if ((squares[a].occupiedBy === squares[b].occupiedBy) && (squares[a].occupiedBy === squares[c].occupiedBy) && (squares[a].occupiedBy !== "")) {
+          return this.props.win(this.state.nextPlayer)
+        }
+      })
     }
   }
 
@@ -137,25 +119,6 @@ class Board extends React.Component {
   }
 
 
-  render() {
-
-    return (
-      <React.Fragment>
-        <div className="status h2 text-center">{/*to do dunno*/}</div>
-        <div className="board">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </React.Fragment>
-    );
-  }
   //Load an old game and store current one
   loadOldGame = i => {
     if (!this.state.oldGameLoaded) {
@@ -188,6 +151,26 @@ class Board extends React.Component {
       { i: 8, occupiedBy: "" }]
     })
   }
+
+  render() {
+
+    return (
+      <React.Fragment>
+        <div className="status h2 text-center">{/*to do dunno*/}</div>
+        <div className="board">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 ///////////////////////////////////////////
@@ -204,7 +187,6 @@ class Game extends React.Component {
       games: []
     }
     this.gameBoard = React.createRef()
-
   }
 
   nextPlayer = (player) => {
