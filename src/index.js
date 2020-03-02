@@ -40,7 +40,7 @@ class GameList extends React.Component {
   //Shows button with status of the last game
   render() {
     return (
-      <li><button>{this.props.game}</button></li>
+      <li><button onClick={() => { this.props.loadGame(this.props.index) }}>{this.props.game}</button></li>
 
     )
   }
@@ -71,7 +71,6 @@ class Board extends React.Component {
   }
 
   playerMove = i => {
-    console.log("Test")
     if (!this.props.gameWon) {
       const squares = this.state.squares
       //If square matches index is empty, write player name into occupiedBy and switch player
@@ -155,6 +154,10 @@ class Board extends React.Component {
       </React.Fragment>
     );
   }
+  loadOldGame = i => {
+    this.setState({ squares: this.state.oldGames[i] })
+    // console.log(this.state.oldGames[i])
+  }
 
   reset() {
 
@@ -175,7 +178,6 @@ class Board extends React.Component {
       { i: 7, occupiedBy: "" },
       { i: 8, occupiedBy: "" }]
     })
-    console.log(this.state.oldGames)
   }
 }
 
@@ -191,7 +193,7 @@ class Game extends React.Component {
       winner: "",
       games: []
     }
-    this.resetGame = React.createRef()
+    this.gameBoard = React.createRef()
 
   }
 
@@ -216,7 +218,7 @@ class Game extends React.Component {
     //reset in Game component
     this.setState({ message: "Starting player: X", gameWon: false, winner: "" })
     //reset in Board component
-    this.resetGame.current.reset()
+    this.gameBoard.current.reset()
 
     //TODO:
     //somehow safe Board state
@@ -224,18 +226,21 @@ class Game extends React.Component {
 
 
   }
+  loadGame = (i) => {
+    this.gameBoard.current.loadOldGame(i)
+  }
 
 
   render() {
     const gameList = this.state.games
     const listItems = gameList.map((el, i) => {
-      return (<GameList index={i} game={el} />)
+      return (<GameList loadGame={this.loadGame} index={i} game={el} />)
     })
     return (
       <article className="game container mt-5">
         <section className="row">
           <div className="col-sm-8 game-board">
-            <Board ref={this.resetGame} win={this.win} nextPlayer={this.nextPlayer} gameWon={this.state.gameWon} />
+            <Board ref={this.gameBoard} win={this.win} nextPlayer={this.nextPlayer} gameWon={this.state.gameWon} />
           </div>
           <div className="col-sm-4 game-info">
             <p className="h2">{this.state.message}</p>
